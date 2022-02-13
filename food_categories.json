@@ -1,0 +1,18 @@
+{
+	"dessert": {
+		"food_name": "süti",
+		"category_id": "159"
+	},
+	"fish": {
+		"food_name": "hal",
+		"category_id": "838"
+	},
+	"veggie": {
+		"food_name": "vega",
+		"category_id": "66"
+	},
+    "meat": {
+		"food_name": "meat",
+		"category_id": "95"
+	}
+}

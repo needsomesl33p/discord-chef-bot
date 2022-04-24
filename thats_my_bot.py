@@ -12,6 +12,7 @@ CREDENTIALS_FILE_PATH = 'creds.json'
 FOOD_FILE_PATH = 'food_categories.json'
 JOKES_FILE_PATH = 'jokes.txt'
 GOLDEN_QUOTES_CHN_ID = 967774699125870632
+MSG_LIMIT = 200
 
 
 def load_json(file_path: str):
@@ -27,7 +28,7 @@ def load_jokes():
 
 def cut_array(array: list, idx: int):
     pre: int = 5
-    post: int = 6
+    post: int = 5
     if idx in range(0, 5):
         pre = idx
     return array[idx-pre:idx+post]
@@ -105,7 +106,7 @@ async def on_raw_reaction_add(payload):
     if len(message.reactions) >= 5:
         i = 0
         final_messages: list = []
-        history = await channel.history(limit=200).flatten()
+        history = await channel.history(limit=MSG_LIMIT).flatten()
         for msg in history:
             if message.id == msg.id:
                 break

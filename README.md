@@ -61,7 +61,7 @@ Help me out here:
 
 ### Golden Quotes Feature ###
 
-Feature request: [Collect golden quotes to a different channel]('https://github.com/needsomesl33p/discord-chef-bot/issues/2')
+Feature request: [Collect golden quotes to a different channel](https://github.com/needsomesl33p/discord-chef-bot/issues/2)
 
 Feature implemented:
 

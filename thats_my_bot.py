@@ -56,28 +56,28 @@ async def get_recipe(ctx, food_name):
 
 
 @bot.command(name='cookie', help='Recommends a cookie recipe from streetkitchen.hu')
-async def reommend_cookie(ctx):
+async def recommend_cookie(ctx):
     food_id = food_cats['dessert']
     food = street_kitchen.get_food(*food_id.values())
     await ctx.send(f'Name: {food.name}\nLink:{food.URL}\nImage: {food.image_URL}')
 
 
 @bot.command(name='fishdish', help='Recommends a fish dish recipe from streetkitchen.hu')
-async def reommend_fish_dish(ctx):
+async def recommend_fish_dish(ctx):
     food_id = food_cats['fish']
     food = street_kitchen.get_food(*food_id.values())
     await ctx.send(f'Name: {food.name}\nLink:{food.URL}\nImage: {food.image_URL}')
 
 
 @bot.command(name='veggie', help='Recommends a veggie food from streetkitchen.hu')
-async def reommend_veggie_food(ctx):
+async def recommend_veggie_food(ctx):
     food_id = food_cats['veggie']
     food = street_kitchen.get_food(*food_id.values())
     await ctx.send(f'Name: {food.name}\nLink:{food.URL}\nImage: {food.image_URL}')
 
 
 @bot.command(name='meat', help='You get some protein boost from streetkitchen.hu')
-async def reommend_meat_food(ctx):
+async def recommend_meat_food(ctx):
     food_id = food_cats['meat']
     food = street_kitchen.get_food(*food_id.values())
     await ctx.send(f'Name: {food.name}\nLink:{food.URL}\nImage: {food.image_URL}')

@@ -11,8 +11,7 @@ from discord.ext import commands
 CREDENTIALS_FILE_PATH = 'creds.json'
 FOOD_FILE_PATH = 'food_categories.json'
 JOKES_FILE_PATH = 'jokes.txt'
-GOLDEN_QUOTES_CHN_ID = 967774699125870632
-MSG_LIMIT = 200
+MSG_LIMIT = 300
 
 
 def load_json(file_path: str):
@@ -40,7 +39,6 @@ bot = commands.Bot(command_prefix='!')
 
 
 @bot.command(name='create-channel', help='Create a channel with the given name. For example: !create-channel channel-name')
-# @commands.has_role('Admin')
 async def create_channel(ctx, channel_name='Piggys channel'):
     guild = ctx.guild
     existing_channel = discord.utils.get(guild.channels, name=channel_name)
@@ -117,7 +115,7 @@ async def on_raw_reaction_add(payload):
         for msg in golden_quote_ctx:
             final_messages.append(f'{msg.author.name}: {msg.content}')
 
-        destination_channel = bot.get_channel(GOLDEN_QUOTES_CHN_ID)
+        destination_channel = bot.get_channel(creds['golden_quotes_chn_id'])
         await destination_channel.send('\n'.join(final_messages))
 
 

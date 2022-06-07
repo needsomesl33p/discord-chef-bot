@@ -12,6 +12,7 @@ CREDENTIALS_FILE_PATH = 'creds.json'
 FOOD_FILE_PATH = 'food_categories.json'
 JOKES_FILE_PATH = 'jokes.txt'
 MSG_LIMIT = 300
+hashes: list = []
 
 
 def load_json(file_path: str):
@@ -101,7 +102,7 @@ async def help(ctx):
 async def on_raw_reaction_add(payload):
     channel = bot.get_channel(payload.channel_id)
     message = await channel.fetch_message(payload.message_id)
-    if len(message.reactions) >= 5:
+    if len(message.reactions) == 5:
         i = 0
         final_messages: list = []
         history = await channel.history(limit=MSG_LIMIT).flatten()
@@ -110,13 +111,17 @@ async def on_raw_reaction_add(payload):
                 break
             i += 1
 
-        golden_quote_ctx = cut_array(history, i)
-        golden_quote_ctx.reverse()
-        for msg in golden_quote_ctx:
-            final_messages.append(f'{msg.author.name}: {msg.content}')
+        history_hash = hash(tuple(history))
 
-        destination_channel = bot.get_channel(creds['golden_quotes_chn_id'])
-        await destination_channel.send('\n'.join(final_messages))
+        if history_hash not in hashes:
+            hashes.append(history_hash)
+            golden_quote_ctx = cut_array(history, i)
+            golden_quote_ctx.reverse()
+            for msg in golden_quote_ctx:
+                final_messages.append(f'{msg.author.name}: {msg.content}')
+
+            destination_channel = bot.get_channel(creds['golden_quotes_chn_id'])
+            await destination_channel.send('\n'.join(final_messages))
 
 
 @bot.event

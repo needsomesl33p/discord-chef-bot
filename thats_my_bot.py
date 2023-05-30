@@ -36,7 +36,7 @@ def cut_array(array: list, idx: int):
 
 creds = load_json(CREDENTIALS_FILE_PATH)
 food_cats = load_json(FOOD_FILE_PATH)
-bot = commands.Bot(command_prefix='!')
+bot = commands.Bot(intents=discord.Intents.all(), command_prefix='!')
 
 
 @bot.command(name='create-channel', help='Create a channel with the given name. For example: !create-channel channel-name')
@@ -105,8 +105,8 @@ async def on_raw_reaction_add(payload):
     if len(message.reactions) == 5:
         i = 0
         final_messages: list = []
-        history = await channel.history(limit=MSG_LIMIT).flatten()
-        for msg in history:
+        history = channel.history(limit=MSG_LIMIT)
+        async for msg in history:
             if message.id == msg.id:
                 break
             i += 1
@@ -120,7 +120,8 @@ async def on_raw_reaction_add(payload):
             for msg in golden_quote_ctx:
                 final_messages.append(f'{msg.author.name}: {msg.content}')
 
-            destination_channel = bot.get_channel(creds['golden_quotes_chn_id'])
+            destination_channel = bot.get_channel(
+                creds['golden_quotes_chn_id'])
             await destination_channel.send('\n'.join(final_messages))
 
 

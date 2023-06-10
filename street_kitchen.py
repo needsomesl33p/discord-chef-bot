@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 
 
 BASE_URL_SEARCH = 'https://streetkitchen.hu/kereses/?q='
+EMPTY_SEARCH_RESULT_IMG = 'https://media.tenor.com/rhzC9_tMUukAAAAS/will-smith-eating-spaghetti-will-smith.gif'
 
 
 def _get_food_articles(url: str) -> set:
@@ -22,7 +23,10 @@ def _get_food_articles(url: str) -> set:
             url = link.get('href')
             food_list.append(Food(name, url, image_url))
 
-    return list(set(food_list))
+    set_of_foods: set = list(set(food_list))
+    if set_of_foods:
+        return set_of_foods
+    raise NoFoodWasFound
 
 
 def _build_url_params(food_name: str, category_id: str) -> str:
@@ -37,10 +41,21 @@ def _choose_article(food_list: list) -> Food:
 
 
 def get_food(food_name: str, category_id=None) -> Food:
-    url: str = _build_url_params(food_name, category_id)
-    foods: set = _get_food_articles(url)
-    food: Food = _choose_article(foods)
-    return food
+    try:
+        url: str = _build_url_params(food_name, category_id)
+        foods: set = _get_food_articles(url)
+        food: Food = _choose_article(foods)
+        return food
+    except NoFoodWasFound as ex:
+        return Food(ex.message, EMPTY_SEARCH_RESULT_IMG,
+                    'no image for this time')
+
+
+class NoFoodWasFound(Exception):
+    '''Raised when the search did not find any food on the streetkitchen's site.'''
+
+    def __init__(self):
+        self.message = 'No food was found! Make sure there is no typo in you search and it is written Hungarian.'
 
 
 if __name__ == '__main__':

@@ -1,9 +1,15 @@
+from discord.ext import commands
+from discord import Message
+from typing import AsyncIterator
+from hashlib import sha1
+from utils import (
+    get_message_context,
+    load_jokes,
+    load_json
+)
 import discord
-import json
 import random
 import street_kitchen
-from discord.ext import commands
-
 
 # guild = Guilds in Discord represent an isolated collection of users and channels, and are often referred to as "servers" in the UI.
 
@@ -15,28 +21,10 @@ MSG_LIMIT = 300
 hashes: list = []
 
 
-def load_json(file_path: str):
-    with open(file_path, mode='r', encoding='utf-8') as file:
-        json_file = json.load(file)
-        return json_file
-
-
-def load_jokes():
-    with open(JOKES_FILE_PATH, mode='r', encoding='utf-8') as file:
-        return file.readlines()
-
-
-def cut_array(array: list, idx: int):
-    pre: int = 5
-    post: int = 5
-    if idx in range(0, 5):
-        pre = idx
-    return array[idx-pre:idx+post]
-
-
-creds = load_json(CREDENTIALS_FILE_PATH)
-food_cats = load_json(FOOD_FILE_PATH)
-bot = commands.Bot(command_prefix='!')
+creds: dict = load_json(CREDENTIALS_FILE_PATH)
+food_cats: dict = load_json(FOOD_FILE_PATH)
+joke_list: list = load_jokes(JOKES_FILE_PATH)
+bot = commands.Bot(intents=discord.Intents.all(), command_prefix='!')
 
 
 @bot.command(name='create-channel', help='Create a channel with the given name. For example: !create-channel channel-name')
@@ -84,7 +72,6 @@ async def recommend_meat_food(ctx):
 
 @bot.command(name='joke', help='Tells you a joke')
 async def tell_joke(ctx):
-    joke_list = load_jokes()
     response = random.choice(joke_list)
     await ctx.send(response)
 
@@ -101,27 +88,20 @@ async def help(ctx):
 @bot.event
 async def on_raw_reaction_add(payload):
     channel = bot.get_channel(payload.channel_id)
-    message = await channel.fetch_message(payload.message_id)
+    message: Message = await channel.fetch_message(payload.message_id)
     if len(message.reactions) == 5:
-        i = 0
-        final_messages: list = []
-        history = await channel.history(limit=MSG_LIMIT).flatten()
-        for msg in history:
-            if message.id == msg.id:
-                break
-            i += 1
+        history: AsyncIterator = channel.history(
+            limit=MSG_LIMIT)
 
-        history_hash = hash(tuple(history))
+        golden_quote_ctx = await get_message_context(history, message)
 
-        if history_hash not in hashes:
-            hashes.append(history_hash)
-            golden_quote_ctx = cut_array(history, i)
-            golden_quote_ctx.reverse()
-            for msg in golden_quote_ctx:
-                final_messages.append(f'{msg.author.name}: {msg.content}')
+        sha1_print: str = sha1(golden_quote_ctx.encode()).hexdigest()
+        if sha1_print not in hashes:
+            hashes.append(sha1_print)
 
-            destination_channel = bot.get_channel(creds['golden_quotes_chn_id'])
-            await destination_channel.send('\n'.join(final_messages))
+            destination_channel = bot.get_channel(
+                creds['golden_quotes_chn_id'])
+            await destination_channel.send(golden_quote_ctx)
 
 
 @bot.event

@@ -1,8 +1,8 @@
-class Food(object):
+class Food:
     def __init__(self, name: str, URL: str, image_URL: str):
         self.name = name
         self.URL = URL
-        self.image_URL = image_URL
+        self.image_URL = f'`{image_URL}`'
 
     def __key(self):
         return (self.name, self.URL, self.image_URL)
